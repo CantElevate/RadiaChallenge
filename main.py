@@ -27,11 +27,14 @@ class Transaction:
     def __init__(self):
         self.conn = db_connect(database)
         self.cur = self.conn.cursor()
+        self.lifetime = 0
 
     def getrecords(self, cid):
         for row in self.cur.execute(f"SELECT * FROM transactions where customerid={cid} order by customerid, date DESC"):
-            print(f'Customer: {row[3]} earned {self.rewards(row[2])} rewards earned on a {row[1]} with a transaction '
-                  f'total of {row[2]}')
+            print(f'Customer: {row[3]} earned {self.rewards(row[2])} rewards on {row[1]} with a transaction '
+                  f'total of ${row[2]}')
+            self.lifetime += self.rewards(row[2])
+        print(f'Total rewards earned: {self.lifetime}')
 
     def rewards(self, totalspent):
         if totalspent <= 50:
@@ -44,4 +47,4 @@ class Transaction:
 
 if __name__ == '__main__':
     t = Transaction()
-    t.getrecords(2)
+    t.getrecords(1)
