@@ -11,22 +11,37 @@ Given a record of every transaction during a three month period, calculate the r
 import sqlite3
 import math
 import datetime
-conn = sqlite3.connect('example.db')
-c = conn.cursor()
-c.execute(f'select * from transactions where date={datetime.datetime.now().date()}')
-print(c.fetchall())
+database = "example.db"
 
 
-
-def rewards(totalspent):
-    if totalspent <= 50:
-        return 0
-    elif totalspent <= 100:
-        return totalspent - 50
-    else:
-        doublepoints = totalspent - 100
-        return math.floor(50 + 2 * doublepoints)
+def db_connect(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+    except sqlite3.Error as e:
+        print(e)
+    return conn
 
 
+class Transaction:
+    def __init__(self):
+        self.conn = db_connect(database)
+        self.cur = self.conn.cursor()
 
+    def getrecords(self, cid):
+        for row in self.cur.execute(f"SELECT * FROM transactions where customerid={cid} order by customerid, date DESC"):
+            print(f'Customer: {row[3]} earned {self.rewards(row[2])} rewards earned on a {row[1]} with a transaction '
+                  f'total of {row[2]}')
 
+    def rewards(self, totalspent):
+        if totalspent <= 50:
+            return 0
+        elif totalspent <= 100:
+            return totalspent - 50
+        else:
+            doublepoints = totalspent - 100
+            return math.floor(50 + 2 * doublepoints)
+
+if __name__ == '__main__':
+    t = Transaction()
+    t.getrecords(2)
