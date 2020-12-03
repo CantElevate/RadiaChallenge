@@ -31,7 +31,6 @@ class Transaction:
 
     def getcustomers(self):
         for row in self.cur.execute(f"SELECT DISTINCT customerid from transactions"):
-            #print(f'{row[0]}')
             choices.append(row[0])
 
     def getrecords(self, cid):
