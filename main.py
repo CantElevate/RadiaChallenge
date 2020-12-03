@@ -28,6 +28,7 @@ class Transaction:
     def __init__(self):
         self.conn = db_connect(database)
         self.cur = self.conn.cursor()
+        self.total = 0
 
     def getcustomers(self):
         for row in self.cur.execute(f"SELECT DISTINCT customerid from transactions"):
@@ -38,6 +39,8 @@ class Transaction:
         for row in self.cur.execute(f"SELECT * FROM transactions where customerid={cid} order by customerid, date DESC"):
             date = datetime.datetime.strptime(row[1], "%Y-%m-%d")
             print(f'Customer: {row[3]} earned {self.rewards(row[2])} rewards earned in {date.strftime("%b")} with a transaction total of ${row[2]}')
+            self.total += self.rewards(row[2])
+        print(f'Total rewards earned: {self.total}')
 
     def rewards(self, totalspent):
         if totalspent <= 50:
