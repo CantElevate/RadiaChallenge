@@ -8,6 +8,8 @@ A customer receives 2 points for every dollar spent over $100 in each transactio
 Given a record of every transaction during a three month period, calculate the reward points earned for each customer
  per month and total."""
 
+
+import sys
 import sqlite3
 import math
 import datetime
@@ -22,11 +24,15 @@ def db_connect(db_file):
         print(e)
     return conn
 
-
 class Transaction:
     def __init__(self):
         self.conn = db_connect(database)
         self.cur = self.conn.cursor()
+
+    def getcustomers(self):
+        for row in self.cur.execute(f"SELECT DISTINCT customerid from transactions"):
+            #print(f'{row[0]}')
+            choices.append(row[0])
 
     def getrecords(self, cid):
         date = ""
@@ -45,4 +51,19 @@ class Transaction:
 
 if __name__ == '__main__':
     t = Transaction()
-    t.getrecords(2)
+    choice = ""
+    choices = []
+    t.getcustomers()
+
+    while True:
+        print('---------- Customers ---------')
+        print('0: exit')
+        for c in choices:
+            print(f'{c}')
+        choice = input("Please select a customerID: ")
+        if choice == '1':
+            t.getrecords(1)
+        elif choice == '2':
+            t.getrecords(2)
+        else:
+            sys.exit()
